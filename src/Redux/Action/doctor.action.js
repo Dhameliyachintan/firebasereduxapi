@@ -2,15 +2,19 @@
 import { deletedoctordata, getdoctordata, postdoctordata, putdoctordata } from "../../commene/api/doctor.api";
 import { BASE_URL } from "../../Share/baseurl";
 import * as ActionType from "../ActionType"
+import { collection, addDoc, getDocs } from "firebase/firestore";
+import { db } from "../../Firebase";
 
 
 // getMedicines
-export const getDoctor = () => (dispatch) => {
+export const getDoctor = () => async (dispatch) => {
     console.log("asdaasdasdasdasd");
     try {
 
-        getdoctordata()
-            .then((data) => dispatch({ type: ActionType.GET_DOCTOR, payload: data.data }))
+        // const querySnapshot = await getDocs(collection(db, "doctor"));
+        // querySnapshot.forEach((doc) => {
+        //     console.log(`${doc.id} => ${doc.data()}`);
+        // });
 
     } catch (error) {
         dispatch(errordoctor(error))
@@ -19,16 +23,20 @@ export const getDoctor = () => (dispatch) => {
 }
 
 // addmedicinedata
-export const adddoctordata = (data) => (dispatch) => {
+export const adddoctordata = (data) => async (dispatch) => {
+    console.log(data);
     try {
-        setTimeout(function () {
-            return postdoctordata(data)
-                .then((data) => dispatch({ type: ActionType.ADD_DOCTOR, payload: data.data }))
-                .catch((error) => dispatch(errordoctor(error.message)))
-        }, 2000)
-
+        const docRef = await addDoc(collection(db, "doctor"), {
+            first: data.name,
+            price: data.price,
+            quantity: data.quantity,
+            expiry: data.expiry,
+        });
+        console.log("Document written with ID: ", docRef.id);
+        dispatch({ type: ActionType.ADD_DOCTOR, payload: { id: docRef.id, ...data } })
     } catch (error) {
         dispatch(errordoctor(error.message))
+        console.error("Error adding document: ", error);
     }
 }
 
@@ -41,7 +49,7 @@ export const updatedoctor = (data) => (dispatch) => {
             .then((data) => dispatch({ type: ActionType.UPDATAS_DOCTOR, payload: data.data }))
             .catch((error) => dispatch(errordoctor(error.message)))
         dispatch(loadingdoctor())
-        
+
     } catch (error) {
         dispatch(errordoctor(error.message));
     }

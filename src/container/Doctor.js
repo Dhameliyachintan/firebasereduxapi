@@ -109,7 +109,7 @@ export default function Doctor() {
       ...value
     }
 
-    console.log(udata);
+    // console.log(udata);
 
     dispatch(adddoctordata(udata))
 
