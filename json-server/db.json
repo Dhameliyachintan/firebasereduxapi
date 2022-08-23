@@ -1,0 +1,42 @@
+{
+  "doctor": [
+    {
+      "id": 359,
+      "name": "amit1",
+      "price": "23",
+      "quantity": "100",
+      "expiry": "2022",
+      "data": "22-05-2015"
+    },
+    {
+      "id": 922,
+      "name": "chintan",
+      "price": "23",
+      "quantity": "100",
+      "expiry": "20221"
+    }
+  ],
+  "comments": [
+    {
+      "id": 3,
+      "name": "some comment",
+      "price": 30,
+      "postId": 2
+    },
+    {
+      "id": 4,
+      "name": "some comment",
+      "price": 30,
+      "postId": 2
+    },
+    {
+      "id": 5,
+      "name": "some comment",
+      "price": 31,
+      "postId": 20
+    }
+  ],
+  "profile": {
+    "name": "typicode"
+  }
+}
