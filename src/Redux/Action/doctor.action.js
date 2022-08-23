@@ -10,12 +10,10 @@ import { db } from "../../Firebase";
 export const getDoctor = () => async (dispatch) => {
     console.log("asdaasdasdasdasd");
     try {
-
-        // const querySnapshot = await getDocs(collection(db, "doctor"));
-        // querySnapshot.forEach((doc) => {
-        //     console.log(`${doc.id} => ${doc.data()}`);
-        // });
-
+        
+        getdoctordata()
+            .then((data) => dispatch({ type: ActionType.GET_DOCTOR, payload: data.data }))
+        
     } catch (error) {
         dispatch(errordoctor(error))
         console.log(error);
