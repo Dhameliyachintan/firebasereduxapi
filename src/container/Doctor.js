@@ -104,14 +104,14 @@ export default function Doctor() {
   const handleSubmitdata = (value) => {
     // let localdata = JSON.parse(localStorage.getItem("medicine"));
 
-    let udata = {
-      id: Math.floor(Math.random() * 1000),
-      ...value
-    }
+    // let udata = {
+    //   id: Math.floor(Math.random() * 1000),
+    //   ...value
+    // }
 
     // console.log(udata);
 
-    dispatch(adddoctordata(udata))
+    dispatch(adddoctordata(value))
 
 
     // if (localdata === null) {
