@@ -24,12 +24,8 @@ export const getDoctor = () => async (dispatch) => {
 export const adddoctordata = (data) => async (dispatch) => {
     console.log(data);
     try {
-        const docRef = await addDoc(collection(db, "doctor"), {
-            first: data.name,
-            price: data.price,
-            quantity: data.quantity,
-            expiry: data.expiry,
-        });
+        const docRef = await addDoc(collection(db, "doctor"), data);
+        
         console.log("Document written with ID: ", docRef.id);
         dispatch({ type: ActionType.ADD_DOCTOR, payload: { id: docRef.id, ...data } })
     } catch (error) {
