@@ -3,8 +3,9 @@ import { deletedoctordata, getdoctordata, postdoctordata, putdoctordata } from "
 import { BASE_URL } from "../../Share/baseurl";
 import * as ActionType from "../ActionType"
 import { collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from "firebase/firestore";
-import { db } from "../../Firebase";
+import { db, storage } from "../../Firebase";
 import { async } from "@firebase/util";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 
 // getMedicines
@@ -31,11 +32,40 @@ export const getDoctor = (data) => async (dispatch) => {
 // addmedicinedata
 export const adddoctordata = (data) => async (dispatch) => {
     console.log(data);
-    dispatch(loadingdoctor())
+    // dispatch(loadingdoctor())
     try {
-        const docRef = await addDoc(collection(db, "doctor"), data);
-        console.log("Document written with ID: ", docRef.id);
-        dispatch({ type: ActionType.ADD_DOCTOR, payload: { id: docRef.id, ...data } })
+        const doctorRef = ref(storage, 'doctor/' + data.file.name);
+        uploadBytes(doctorRef, data.file)
+            .then((snapshot) => {
+                getDownloadURL(snapshot.ref)
+                    .then(async (url) => {
+                        const docRef = await addDoc(collection(db, "doctor"),
+                            {
+                                name: data.name,
+                                expiry: data.expiry,
+                                price: data.price,
+                                quantity: data.quantity,
+                                url: url
+                            }
+                        );
+                        // console.log("Document written with ID: ", docRef.id);
+                        dispatch({
+                            type: ActionType.ADD_DOCTOR, payload: {
+                                id : docRef.id,
+                                name: data.name,
+                                expiry: data.expiry,
+                                price: data.price,
+                                quantity: data.quantity,
+                                url: url
+                            }
+                        })
+                    })
+                // console.log('Uploaded a blob or file!');
+            });
+
+        // const docRef = await addDoc(collection(db, "doctor"), data);
+        // console.log("Document written with ID: ", docRef.id);
+        // dispatch({ type: ActionType.ADD_DOCTOR, payload: { id: docRef.id, ...data } })
     } catch (error) {
         dispatch(errordoctor(error.message))
         console.error("Error adding document: ", error);
@@ -52,10 +82,10 @@ export const updatedoctor = (data) => async (dispatch) => {
 
         // Set the "capital" field of the city 'DC'
         await updateDoc(washingtonRef, {
-            name : data.name,
-            expiry : data.expiry,
-            price : data.price,
-            quantity : data.quantity
+            name: data.name,
+            expiry: data.expiry,
+            price: data.price,
+            quantity: data.quantity
         });
         dispatch({ type: ActionType.UPDATAS_DOCTOR, payload: data })
 

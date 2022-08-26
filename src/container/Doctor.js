@@ -27,6 +27,10 @@ export default function Doctor() {
   const [dopen, setDopen] = useState(false);
   const [did, setDid] = useState()
   const [uid, setUid] = useState()
+  // const [file, setFile] = useState("");
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [upload, setupload] = useState(null);
+
   const dispatch = useDispatch()
 
   const count = useSelector(state => state.counter)
@@ -57,6 +61,7 @@ export default function Doctor() {
     price: yup.string().required('please enter price'),
     quantity: yup.string().required('please enter quantity'),
     expiry: yup.string().required('please enter expiry'),
+    file: yup.mixed().required("Please Upload File")
   }
 
 
@@ -67,10 +72,12 @@ export default function Doctor() {
       name: '',
       price: '',
       quantity: '',
-      expiry: ''
+      expiry: '',
+      file: ''
     },
     validationSchema: schema,
     onSubmit: (value, { resetForm }) => {
+      console.log(value);
       if (Update) {
         handleupdate(value)
       } else {
@@ -171,7 +178,8 @@ export default function Doctor() {
           </IconButton>
         </>
       )
-    }
+    },
+    { field: 'upload', headerName: 'upload', width: 130 },
   ];
 
   const handleEdit = (params) => {
@@ -182,7 +190,8 @@ export default function Doctor() {
       name: params.row.name,
       price: params.row.price,
       quantity: params.row.quantity,
-      expiry: params.row.expiry
+      expiry: params.row.expiry,
+      file: params.row.file
     });
     setUid(params.row.id)
     // console.log(data);
@@ -221,8 +230,18 @@ export default function Doctor() {
 
   console.log(doctors.errors);
 
+
   return (
+
     <>
+      {/* {selectedImage && (
+        <div>
+          <img alt="not fount" width={"20px"} src={URL.createObjectURL(selectedImage)} /> :
+           
+          <br />
+          <button onClick={() => setSelectedImage(null)}>submit</button>
+        </div>
+      )} */}
       {
         doctors.isLoading ?
           <p>Loading...</p> :
@@ -315,6 +334,23 @@ export default function Doctor() {
                             helperText={formik.errors.expiry}
                             error={formik.errors.expiry ? true : false}
                           />
+                          <input
+                            type="file"
+                            name="file"
+                            id="file"
+                            variant="standard"
+                            onChange={e => formik.setFieldValue('file', e.target.files[0])}
+                            defaultValue={formik.values.file}
+                            helperText={formik.errors.file}
+                            error={formik.errors.file ? true : false}
+                            
+                              // setSelectedImage(event.target.files[0]);
+
+                          /> 
+                          {
+                            formik.errors.file ? <p>{formik.errors.file}</p> : ''
+                          }
+
                           <DialogActions>
                             <Button onClick={handleClose}>Cancel</Button>
                             {
