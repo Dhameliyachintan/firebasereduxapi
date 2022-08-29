@@ -2,10 +2,10 @@
 import { deletedoctordata, getdoctordata, postdoctordata, putdoctordata } from "../../commene/api/doctor.api";
 import { BASE_URL } from "../../Share/baseurl";
 import * as ActionType from "../ActionType"
-import { collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from "firebase/firestore";
+import { collection, addDoc, getDocs, deleteDoc, doc, updateDoc, } from "firebase/firestore";
 import { db, storage } from "../../Firebase";
 import { async } from "@firebase/util";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { deleteObject, getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 
 // getMedicines
@@ -34,7 +34,9 @@ export const adddoctordata = (data) => async (dispatch) => {
     console.log(data);
     // dispatch(loadingdoctor())
     try {
-        const doctorRef = ref(storage, 'doctor/' + data.file.name);
+        let rendomStr = Math.floor(Math.random() * 1000000).toString();
+        const doctorRef = ref(storage, 'doctor/' + rendomStr);
+
         uploadBytes(doctorRef, data.file)
             .then((snapshot) => {
                 getDownloadURL(snapshot.ref)
@@ -45,18 +47,20 @@ export const adddoctordata = (data) => async (dispatch) => {
                                 expiry: data.expiry,
                                 price: data.price,
                                 quantity: data.quantity,
-                                url: url
+                                url: url,
+                                fileName: rendomStr
                             }
                         );
                         // console.log("Document written with ID: ", docRef.id);
                         dispatch({
                             type: ActionType.ADD_DOCTOR, payload: {
-                                id : docRef.id,
+                                id: docRef.id,
                                 name: data.name,
                                 expiry: data.expiry,
                                 price: data.price,
                                 quantity: data.quantity,
-                                url: url
+                                url: url,
+                                fileName: rendomStr
                             }
                         })
                     })
@@ -96,11 +100,18 @@ export const updatedoctor = (data) => async (dispatch) => {
 
 // Deletemedicine
 
-export const Deletedoctor = (id) => async (dispatch) => {
+export const Deletedoctor = (data) => async (dispatch) => {
     try {
-        dispatch(loadingdoctor())
-        await deleteDoc(doc(db, "doctor", id));
-        dispatch({ type: ActionType.REMOVE_DOCTOR, payload: id })
+        const desertRef = ref(storage, 'doctor/' + data.fileName);
+
+        // Delete the file
+        deleteObject(desertRef).then(async () => {
+            dispatch(loadingdoctor())
+            await deleteDoc(doc(db, "doctor", data.id));
+            dispatch({ type: ActionType.REMOVE_DOCTOR, payload: data.id })
+        }).catch((error) => {
+            dispatch(errordoctor(error.message))
+        });
     }
     catch (error) {
         dispatch(errordoctor(error.message))

@@ -163,7 +163,7 @@ export default function Doctor() {
       field: 'delete', headerName: 'Delete', width: 130,
       renderCell: (params) => (
         <>
-          <IconButton aria-label="delete" onClick={() => handleClickDopen(params.row.id)}>
+          <IconButton aria-label="delete" onClick={() => handleClickDopen(params.row)}>
             <DeleteIcon />
           </IconButton>
         </>
@@ -179,7 +179,14 @@ export default function Doctor() {
         </>
       )
     },
-    { field: 'upload', headerName: 'upload', width: 130 },
+    {
+      field: 'url', headerName: 'Image', width: 130,
+      renderCell: (params) => (
+        <>
+          <img src={params.row.url} width={50} height={50}/>
+        </>
+      )
+    },
   ];
 
   const handleEdit = (params) => {
@@ -234,14 +241,6 @@ export default function Doctor() {
   return (
 
     <>
-      {/* {selectedImage && (
-        <div>
-          <img alt="not fount" width={"20px"} src={URL.createObjectURL(selectedImage)} /> :
-           
-          <br />
-          <button onClick={() => setSelectedImage(null)}>submit</button>
-        </div>
-      )} */}
       {
         doctors.isLoading ?
           <p>Loading...</p> :
@@ -343,10 +342,10 @@ export default function Doctor() {
                             defaultValue={formik.values.file}
                             helperText={formik.errors.file}
                             error={formik.errors.file ? true : false}
-                            
-                              // setSelectedImage(event.target.files[0]);
 
-                          /> 
+                          // setSelectedImage(event.target.files[0]);
+
+                          />
                           {
                             formik.errors.file ? <p>{formik.errors.file}</p> : ''
                           }
