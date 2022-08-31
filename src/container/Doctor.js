@@ -16,6 +16,7 @@ import CreateIcon from '@mui/icons-material/Create';
 import { useDispatch, useSelector } from 'react-redux';
 import { DialogContentText } from '@mui/material';
 import { adddoctordata, Deletedoctor, getDoctor, updatedoctor } from '../Redux/Action/doctor.action';
+import { Panorama } from '@mui/icons-material';
 
 
 
@@ -189,7 +190,8 @@ export default function Doctor() {
     },
   ];
 
-  const handleEdit = (params) => {
+  const handleEdit = ( params) => {
+    console.log(params)
     setOpen(true);
     setUpdate(true);
     formik.setValues({
@@ -198,7 +200,8 @@ export default function Doctor() {
       price: params.row.price,
       quantity: params.row.quantity,
       expiry: params.row.expiry,
-      file: params.row.file
+      file: params.row.url,
+      fileName :params.row.fileName
     });
     setUid(params.row.id)
     // console.log(data);
@@ -339,9 +342,6 @@ export default function Doctor() {
                             id="file"
                             variant="standard"
                             onChange={e => formik.setFieldValue('file', e.target.files[0])}
-                            defaultValue={formik.values.file}
-                            helperText={formik.errors.file}
-                            error={formik.errors.file ? true : false}
 
                           // setSelectedImage(event.target.files[0]);
 

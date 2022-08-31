@@ -81,17 +81,49 @@ export const adddoctordata = (data) => async (dispatch) => {
 export const updatedoctor = (data) => async (dispatch) => {
     console.log(data);
     try {
-        dispatch(loadingdoctor())
-        const washingtonRef = doc(db, "doctor", data.id);
+        const doctorRefedit = doc(db, "doctor", data.id);
+        // dispatch(loadingdoctor())
+        if (typeof data.file === "string") {
+            // console.log("only data");
 
-        // Set the "capital" field of the city 'DC'
-        await updateDoc(washingtonRef, {
-            name: data.name,
-            expiry: data.expiry,
-            price: data.price,
-            quantity: data.quantity
-        });
-        dispatch({ type: ActionType.UPDATAS_DOCTOR, payload: data })
+            // Set the "capital" field of the city 'DC'
+            await updateDoc(doctorRefedit, {
+                name: data.name,
+                expiry: data.expiry,
+                price: data.price,
+                quantity: data.quantity,
+                url: data.url
+            });
+            dispatch({ type: ActionType.UPDATAS_DOCTOR, payload: data })
+
+        } else {
+            // console.log("image with");
+            const doctorRefdel = ref(storage, 'doctor/' + data.fileName);
+
+            // Delete the file
+            deleteObject(doctorRefdel).then(async () => {
+                let rendomStr = Math.floor(Math.random() * 1000000).toString();
+                const doctorRef = ref(storage, 'doctor/' + rendomStr);
+
+                uploadBytes(doctorRef, data.file)
+                    .then((snapshot) => {
+                        getDownloadURL(snapshot.ref)
+                            .then(async (url) => {
+                                // console.log("Document written with ID: ", docRef.id);
+                                await updateDoc(doctorRefedit, {
+                                    name: data.name,
+                                    expiry: data.expiry,
+                                    price: data.price,
+                                    quantity: data.quantity,
+                                    url: url,
+                                    fileName: rendomStr
+                                });
+                                dispatch({ type: ActionType.UPDATAS_DOCTOR, payload: { ...data, fileName: rendomStr, url: url, } })
+                            })
+                    }
+                    )
+            })
+        }
 
     } catch (error) {
         dispatch(errordoctor(error.message));
@@ -117,8 +149,6 @@ export const Deletedoctor = (data) => async (dispatch) => {
         dispatch(errordoctor(error.message))
     }
 }
-
-
 
 export const loadingdoctor = () => (dispatch) => {
     dispatch({ type: ActionType.LOADING_DOCTOR })
